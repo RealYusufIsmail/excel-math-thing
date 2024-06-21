@@ -12,8 +12,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class ScoreChartApp extends JFrame {
     private final JTextField filePathField;
@@ -153,7 +153,7 @@ public class ScoreChartApp extends JFrame {
 
             List<Float> cleanPercentages = roundPercentages(percentages);
 
-            DefaultPieDataset dataset = new DefaultPieDataset();
+            DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
             for (int i = 1; i <= maxScore; i++) {
                 float percentage = cleanPercentages.get(i - 1);
                 if (percentage > 0) {
@@ -172,7 +172,7 @@ public class ScoreChartApp extends JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
