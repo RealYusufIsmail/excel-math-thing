@@ -14,6 +14,8 @@ dependencies {
     implementation("org.apache.poi:poi:5.2.5")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
     implementation("org.jfree:jfreechart:1.5.4")
+    implementation("org.apache.commons:commons-lang3:3.14.0")
+    implementation("com.kennycason:kumo-core:1.28")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")

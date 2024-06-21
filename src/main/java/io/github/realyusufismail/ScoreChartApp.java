@@ -12,19 +12,20 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class ScoreChartApp extends JFrame {
     private final JTextField filePathField;
     private final JTextField columnField;
     private final JTextField maxScoreField;
+    private final JTextField titleField;
 
     public ScoreChartApp() {
         setTitle("Score Chart Generator");
         setSize(600, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(4, 3));
+        setLayout(new GridLayout(5, 3));
 
         JLabel filePathLabel = new JLabel("Excel File Path:");
         filePathField = new JTextField();
@@ -37,6 +38,9 @@ public class ScoreChartApp extends JFrame {
         JLabel maxScoreLabel = new JLabel("Max Score:");
         maxScoreField = new JTextField();
 
+        JLabel titleLabel = new JLabel("Chart Title:");
+        titleField = new JTextField();
+
         JButton generateButton = new JButton("Generate Chart");
         generateButton.addActionListener(this::generateChart);
 
@@ -48,6 +52,9 @@ public class ScoreChartApp extends JFrame {
         add(new JLabel()); // Empty cell
         add(maxScoreLabel);
         add(maxScoreField);
+        add(new JLabel()); // Empty cell
+        add(titleLabel);
+        add(titleField);
         add(new JLabel()); // Empty cell
         add(generateButton);
 
@@ -67,9 +74,10 @@ public class ScoreChartApp extends JFrame {
         String filePath = filePathField.getText();
         String scoreColumn = columnField.getText();
         String maxScoreText = maxScoreField.getText();
+        String chartTitle = titleField.getText();
 
-        if (filePath.isEmpty() || scoreColumn.isEmpty() || maxScoreText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please provide file path, score column name, and max score.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        if (filePath.isEmpty() || scoreColumn.isEmpty() || maxScoreText.isEmpty() || chartTitle.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please provide file path, score column name, max score, and chart title.", "Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -145,7 +153,7 @@ public class ScoreChartApp extends JFrame {
 
             List<Float> cleanPercentages = roundPercentages(percentages);
 
-            DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+            DefaultPieDataset dataset = new DefaultPieDataset();
             for (int i = 1; i <= maxScore; i++) {
                 float percentage = cleanPercentages.get(i - 1);
                 if (percentage > 0) {
@@ -153,7 +161,7 @@ public class ScoreChartApp extends JFrame {
                 }
             }
 
-            JFreeChart pieChart = ChartFactory.createPieChart("Score Distribution", dataset, true, true, false);
+            JFreeChart pieChart = ChartFactory.createPieChart(chartTitle, dataset, true, true, false);
             ChartPanel pieChartPanel = new ChartPanel(pieChart);
 
             JFrame pieChartFrame = new JFrame("Pie Chart");
