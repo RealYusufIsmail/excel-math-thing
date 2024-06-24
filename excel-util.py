@@ -118,7 +118,7 @@ def generate_charts(int_df, yes_no_df, str_df, output_dir, font_name, font_size)
         int_counts = int_df[column].value_counts()
         int_counts_percent = (int_counts / int_counts.sum()) * 100
         plt.figure(figsize=(8, 8))
-        int_counts_percent.plot(kind='pie', autopct='%1.1f%%')
+        int_counts_percent.plot(kind='pie', autopct=lambda p: '{:.1f}%'.format(p), textprops={'fontsize': font_size, 'fontname': font_name})
         plt.title(f'Distribution of {cleaned_title}', fontsize=font_size, fontname=font_name)
         plt.savefig(os.path.join(chart_folder, f'{sanitized_column}_pie_chart.png'))
         plt.close()
@@ -143,7 +143,7 @@ def generate_charts(int_df, yes_no_df, str_df, output_dir, font_name, font_size)
         yes_no_counts = yes_no_df[column].apply(lambda x: 'Yes' if str(x).lower() == 'yes' else 'No').value_counts()
         yes_no_counts_percent = (yes_no_counts / yes_no_counts.sum()) * 100
         plt.figure(figsize=(8, 8))
-        yes_no_counts_percent.plot(kind='pie', autopct='%1.1f%%')
+        yes_no_counts_percent.plot(kind='pie', autopct=lambda p: '{:.1f}%'.format(p), textprops={'fontsize': font_size, 'fontname': font_name})
         plt.title(f'Distribution of {cleaned_title}', fontsize=font_size, fontname=font_name)
         plt.savefig(os.path.join(chart_folder, f'{sanitized_column}_pie_chart.png'))
         plt.close()
@@ -212,12 +212,10 @@ button_select_output_dir = tk.Button(root, text="Select Output Directory", comma
 button_select_output_dir.pack(pady=5)
 
 # Font selection
-font_name_label = tk.Label(root, text="Font Name:")
+font_name_label = tk.Label(root, text="Select Font:")
 font_name_label.pack(pady=5)
 font_name_var = tk.StringVar(value="Arial")
-font_name_combobox = ttk.Combobox(root, textvariable=font_name_var)
-font_names = sorted(set([f.name for f in fm.fontManager.ttflist]))
-font_name_combobox['values'] = font_names
+font_name_combobox = ttk.Combobox(root, textvariable=font_name_var, values=sorted([f.name for f in fm.fontManager.ttflist]), state='readonly')
 font_name_combobox.pack(pady=5)
 
 # Font size selection
