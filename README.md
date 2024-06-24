@@ -6,5 +6,5 @@ pip install pyinstaller
 Create the Executable:
 Open a new Command Prompt and navigate to your script directory, then run:
 
-pyinstaller --onefile --noconsole test.py
-Replace your_script_name.py with the name of your Python script.
+python -m PyInstaller --onefile --noconsole test.py
+Replace test.py with the name of your Python script.
