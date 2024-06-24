@@ -125,16 +125,15 @@ def generate_charts(int_df, yes_no_df, str_df, output_dir):
     # Word cloud for each string column
     for column in str_df.columns:
         text = ' '.join(str(value) for value in str_df[column].dropna())
-        if not text.strip():  # Check if there is any text to generate the word cloud
-            text = 'nodata'  # Add a mock word if the text is empty
-        wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
-        plt.figure(figsize=(10, 5))
-        plt.imshow(wordcloud, interpolation='bilinear')
-        plt.axis('off')
-        plt.title(f'Word Cloud for {column}')
-        sanitized_column = sanitize_filename(column)
-        plt.savefig(os.path.join(chart_folder, f'{sanitized_column}_word_cloud.png'))
-        plt.close()
+        if text.strip():  # Check if there is any text to generate the word cloud
+            wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
+            plt.figure(figsize=(10, 5))
+            plt.imshow(wordcloud, interpolation='bilinear')
+            plt.axis('off')
+            plt.title(f'Word Cloud for {column}')
+            sanitized_column = sanitize_filename(column)
+            plt.savefig(os.path.join(chart_folder, f'{sanitized_column}_word_cloud.png'))
+            plt.close()
 
     # Pie chart for each yes/no column
     for column in yes_no_df.columns:
