@@ -10,9 +10,12 @@ python -m PyInstaller --onefile --noconsole test.py
 Replace test.py with the name of your Python script.
 
 ## Download and Installation Instructions
+
+Python release
+
 1. **Download the Executable**:
    Click the link below to download the software:
-   [Download Software](https://github.com/RealYusufIsmail/excel-math-thing/releases/download/0.0.2/excel-util.exe)
+   [Download Software](https://github.com/RealYusufIsmail/excel-math-thing/releases/download/0.0.3/excel-util.exe)
 
 2. **Running the Executable**:
    When you run the downloaded file, you might see a security warning. This is a standard warning for new software. Follow these steps to proceed safely:
