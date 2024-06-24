@@ -1,10 +1,11 @@
 import pandas as pd
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import os
 import re
+import matplotlib.font_manager as fm
 
 # Columns to ignore
 IGNORE_COLUMNS = ['Department', 'Institution', 'Submitted on:', 'Username', 'Full name', 'Group', 'Course']
@@ -71,7 +72,7 @@ def categorize_columns(df):
     
     return int_data, yes_no_data, str_data
 
-def combine_excel_files(file_list, output_dir):
+def combine_excel_files(file_list, output_dir, font_name, font_size):
     # Initialize empty dataframes for each category
     int_df = pd.DataFrame()
     yes_no_df = pd.DataFrame()
@@ -100,9 +101,9 @@ def combine_excel_files(file_list, output_dir):
     messagebox.showinfo("Success", f"Data combined successfully into {output_file}")
 
     # Generate charts
-    generate_charts(int_df, yes_no_df, str_df, output_dir)
+    generate_charts(int_df, yes_no_df, str_df, output_dir, font_name, font_size)
 
-def generate_charts(int_df, yes_no_df, str_df, output_dir):
+def generate_charts(int_df, yes_no_df, str_df, output_dir, font_name, font_size):
     # Create a folder to store the charts
     chart_folder = os.path.join(output_dir, 'charts')
     if not os.path.exists(chart_folder):
@@ -118,7 +119,7 @@ def generate_charts(int_df, yes_no_df, str_df, output_dir):
         int_counts_percent = (int_counts / int_counts.sum()) * 100
         plt.figure(figsize=(8, 8))
         int_counts_percent.plot(kind='pie', autopct='%1.1f%%')
-        plt.title(f'Distribution of {cleaned_title}')
+        plt.title(f'Distribution of {cleaned_title}', fontsize=font_size, fontname=font_name)
         plt.savefig(os.path.join(chart_folder, f'{sanitized_column}_pie_chart.png'))
         plt.close()
 
@@ -130,7 +131,7 @@ def generate_charts(int_df, yes_no_df, str_df, output_dir):
             plt.figure(figsize=(10, 5))
             plt.imshow(wordcloud, interpolation='bilinear')
             plt.axis('off')
-            plt.title(f'Word Cloud for {column}')
+            plt.title(f'Word Cloud for {column}', fontsize=font_size, fontname=font_name)
             sanitized_column = sanitize_filename(column)
             plt.savefig(os.path.join(chart_folder, f'{sanitized_column}_word_cloud.png'))
             plt.close()
@@ -143,7 +144,7 @@ def generate_charts(int_df, yes_no_df, str_df, output_dir):
         yes_no_counts_percent = (yes_no_counts / yes_no_counts.sum()) * 100
         plt.figure(figsize=(8, 8))
         yes_no_counts_percent.plot(kind='pie', autopct='%1.1f%%')
-        plt.title(f'Distribution of {cleaned_title}')
+        plt.title(f'Distribution of {cleaned_title}', fontsize=font_size, fontname=font_name)
         plt.savefig(os.path.join(chart_folder, f'{sanitized_column}_pie_chart.png'))
         plt.close()
 
@@ -169,7 +170,12 @@ def start_work():
     if not output_dir:
         messagebox.showwarning("Warning", "Output directory not selected!")
         return
-    combine_excel_files(selected_files, output_dir)
+    font_name = font_name_var.get()
+    font_size = font_size_var.get()
+    if not font_size.isdigit():
+        messagebox.showwarning("Warning", "Font size must be a number!")
+        return
+    combine_excel_files(selected_files, output_dir, font_name, int(font_size))
 
 # Initialize global variables
 selected_files = []
@@ -204,6 +210,22 @@ output_dir_label.pack()
 
 button_select_output_dir = tk.Button(root, text="Select Output Directory", command=select_output_dir)
 button_select_output_dir.pack(pady=5)
+
+# Font selection
+font_name_label = tk.Label(root, text="Font Name:")
+font_name_label.pack(pady=5)
+font_name_var = tk.StringVar(value="Arial")
+font_name_combobox = ttk.Combobox(root, textvariable=font_name_var)
+font_names = sorted(set([f.name for f in fm.fontManager.ttflist]))
+font_name_combobox['values'] = font_names
+font_name_combobox.pack(pady=5)
+
+# Font size selection
+font_size_label = tk.Label(root, text="Font Size:")
+font_size_label.pack(pady=5)
+font_size_var = tk.StringVar(value="12")
+font_size_entry = tk.Entry(root, textvariable=font_size_var)
+font_size_entry.pack(pady=5)
 
 button_start_work = tk.Button(root, text="Start Work", command=start_work)
 button_start_work.pack(pady=20)
