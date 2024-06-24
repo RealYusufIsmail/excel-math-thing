@@ -6,6 +6,9 @@ from wordcloud import WordCloud
 import os
 import re
 
+# Columns to ignore
+IGNORE_COLUMNS = ['Department', 'Institution', 'Submitted on:', 'Username', 'Full name', 'Group', 'Course']
+
 # Function to sanitize filenames
 def sanitize_filename(filename):
     return re.sub(r'[\\/*?:"<>|]', "", filename)
@@ -26,7 +29,7 @@ def predominant_type(series):
         elif isinstance(value, (int, float)):
             num_count += 1
         elif isinstance(value, str):
-            if value.lower() in ['yes', 'no']:
+            if value.lower() in ['yes', 'no', 'not yet']:
                 yes_no_count += 1
             else:
                 try:
@@ -49,6 +52,8 @@ def categorize_columns(df):
     str_cols = []
 
     for column in df.columns:
+        if column in IGNORE_COLUMNS:
+            continue
         col_type = predominant_type(df[column])
         if col_type == 'int':
             int_cols.append(column)
@@ -114,24 +119,31 @@ def generate_charts(int_df, yes_no_df, str_df, output_dir):
         plt.savefig(os.path.join(chart_folder, f'{sanitized_column}_pie_chart.png'))
         plt.close()
 
-    # Word cloud for string data
-    text = ' '.join(str(value) for value in str_df.values.flatten() if pd.notnull(value))
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
-    plt.figure(figsize=(10, 5))
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis('off')
-    plt.title('Word Cloud for String Data')
-    plt.savefig(os.path.join(chart_folder, 'word_cloud.png'))
-    plt.close()
-
-    # Bar chart for yes/no data
-    yes_no_counts = yes_no_df.apply(pd.Series.value_counts).fillna(0).sum(axis=1)
-    yes_no_counts.plot(kind='bar', figsize=(8, 6))
-    plt.title('Distribution of Yes/No Data')
-    plt.xlabel('Response')
-    plt.ylabel('Count')
-    plt.savefig(os.path.join(chart_folder, 'yes_no_bar_chart.png'))
-    plt.close()
+    # Word cloud for each string column
+    for column in str_df.columns:
+        text = ' '.join(str(value) for value in str_df[column].dropna())
+        if text.strip():  # Check if there is any text to generate the word cloud
+          # Add a mock word if the text is empty
+            wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
+            plt.figure(figsize=(10, 5))
+            plt.imshow(wordcloud, interpolation='bilinear')
+            plt.axis('off')
+            plt.title(f'Word Cloud for {column}')
+            sanitized_column = sanitize_filename(column)
+            plt.savefig(os.path.join(chart_folder, f'{sanitized_column}_word_cloud.png'))
+            plt.close()
+            
+    # Pie chart for each yes/no column
+    for column in yes_no_df.columns:
+        sanitized_column = sanitize_filename(column)
+        cleaned_title = clean_title(column)
+        yes_no_counts = yes_no_df[column].apply(lambda x: 'Yes' if str(x).lower() == 'yes' else 'No').value_counts()
+        yes_no_counts_percent = (yes_no_counts / yes_no_counts.sum()) * 100
+        plt.figure(figsize=(8, 8))
+        yes_no_counts_percent.plot(kind='pie', autopct='%1.1f%%')
+        plt.title(f'Distribution of {cleaned_title}')
+        plt.savefig(os.path.join(chart_folder, f'{sanitized_column}_pie_chart.png'))
+        plt.close()
 
     messagebox.showinfo("Success", "Charts generated successfully and saved in the 'charts' folder")
 
