@@ -11,7 +11,7 @@ import matplotlib.font_manager as fm
 IGNORE_COLUMNS = ['Department', 'Institution', 'Submitted on:', 'Username', 'Full name', 'Group', 'Course']
 
 # Version
-version = "0.0.3"
+version = "0.0.4"
 
 # Function to sanitize filenames
 def sanitize_filename(filename):
